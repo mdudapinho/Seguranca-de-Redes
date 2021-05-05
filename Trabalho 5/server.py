@@ -9,6 +9,7 @@
 import sys, time, re
 import threading
 from socket import *
+import hashlib
 
 PORT = 8080
 HOST = ''       # '' for localhost
@@ -16,10 +17,33 @@ LOG = True
 log_file = "log.txt"
 MAX_CLIENTS = 10
 MAX_DATA_RECV = 4096    # max number of bytes we receive at once
+hash_file = "hash_file.txt"
+this_file = "server.py"
+CREATENEWHASH = False
+USEHASH = False
+
+def md5Hash(text):
+    result = hashlib.md5(text.encode("utf-8")).hexdigest()
+    return result[:16]
 
 def checkApplicationIntegrity():
-    ## TODO: hash of file
+    if(USEHASH):
+        fh = open(hash_file).read()
+        th = open(this_file).read()
+        hash_ = md5Hash(th)
+        print("fh: ", fh)
+        print("th: ", hash_)
+        if(fh == hash_):
+            return True
+        return False
     return True
+
+def createHashFile():
+    fh = open(this_file).read()
+    hash_ = md5Hash(fh)
+    f = open(hash_file,'w+')
+    f.write(hash_)
+    f.close()
 
 def checkMonitorando(request):
     ## TODO: hash of file
@@ -245,8 +269,11 @@ class Server:
        
     
 if __name__ == "__main__":
+    if(CREATENEWHASH):
+        createHashFile()
     if(checkApplicationIntegrity()):
-        server = Server()           # creating the instance of the server class
-        server.listen_to_client()   # calling the listen to Client call
+        print("Passou pro server!!")
+        #server = Server()           # creating the instance of the server class
+        #server.listen_to_client()   # calling the listen to Client call
     else:
         print("APPLICATION INTEGRITY COMPROMISED!")
