@@ -91,6 +91,7 @@ class Server:
                 client_connection_socket.send("UNAUTHORIZED ACCESS!")
                 message = "Client with port: " + str(client_address[1]) + " connection closed"
                 log_info(message)
+                print("UNAUTHORIZED ACCESS!")
                 print(message)
         else:
             # a blank request call was made by a client
